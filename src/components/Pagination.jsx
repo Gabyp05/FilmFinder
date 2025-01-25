@@ -5,6 +5,7 @@ const Pagination = ({ totalPages, currentPage, handlePageChange }) => {
     <div className="flex flew-row justify-between items-center">
       {currentPage > 1 && (
         <button
+          aria-label="Previous"
           className="flex items-center justify-center pagination-btn"
           onClick={() => handlePageChange(currentPage - 1)}
         >
@@ -33,6 +34,7 @@ const Pagination = ({ totalPages, currentPage, handlePageChange }) => {
 
       {currentPage && (
         <button
+          aria-label="Next"
           className="flex items-center justify-center pagination-btn"
           onClick={() => handlePageChange(currentPage + 1)}
         >

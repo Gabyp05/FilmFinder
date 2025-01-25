@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import "@fontsource-variable/dm-sans";
 import { useEffect, useRef, useState } from "react";
 import Search from "./components/Search";
 import Spinner from "./components/Spinner";
@@ -96,8 +97,7 @@ function App() {
       <div className="pattern" />
       <div className="wrapper">
         <header>
-          <img src="./logo.png" alt="Logo" className="p-4 w-auto mb-[70px]" />
-          <img src="./hero.png" alt="Hero Banner" />
+          <img src="./hero.webp" alt="Hero Banner" width={512} height={306} />
           <h1>
             Find <span className="text-gradient">Movies</span> You&apos;ll Enjoy
             Without the Hassle
@@ -112,7 +112,12 @@ function App() {
               {trendingMovies.map((movie, index) => (
                 <li key={movie.$id}>
                   <p>{index + 1}</p>
-                  <img src={movie.poster_url} alt={movie.title} />
+                  <img
+                    src={movie.poster_url}
+                    alt={"Movie Top " + (index + 1)}
+                    width={127}
+                    height={163}
+                  />
                 </li>
               ))}
             </ul>
@@ -130,7 +135,9 @@ function App() {
             <>
               <ul>
                 {movieList.map((movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
+                  <li key={movie.id} id={movie.id}>
+                    <MovieCard movie={movie} />
+                  </li>
                 ))}
               </ul>
               <Pagination
