@@ -36,7 +36,7 @@
   }
 
   main {
-    @apply min-h-screen relative bg-primary;
+    @apply min-h-screen relative bg-primary overflow-hidden;
   }
 
   header {
@@ -99,6 +99,10 @@
     & ul {
       @apply grid grid-cols-1 gap-5 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
     }
+  }
+
+  .pagination-btn {
+    @apply bg-dark-100 p-4 size-[56px] rounded-lg shadow-inner shadow-light-100/10 text-white cursor-pointer;
   }
 
   .movie-card {

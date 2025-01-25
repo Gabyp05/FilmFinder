@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useRef, useState } from "react";
 import Search from "./components/Search";
 import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
+import Pagination from "./components/Pagination";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -24,16 +26,19 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
 
-  const fetchMovies = async (query = "") => {
+  const fetchMovies = async (query = "", page = currentPage) => {
     setIsLoading(true);
     setErrorMessage("");
 
     try {
       const endpoint = query
         ? `${BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-        : `${BASE_URL}/discover/movie?sort_by=popularity.desc`;
+        : `${BASE_URL}/discover/movie?sort_by=popularity.desc&page=${page}`;
 
       const response = await fetch(endpoint, API_OPTIONS);
 
@@ -49,6 +54,7 @@ function App() {
       }
 
       setMovieList(data.results || []);
+      setTotalPages(data.total_pages);
 
       if (query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
@@ -72,12 +78,18 @@ function App() {
   };
 
   useEffect(() => {
-    fetchMovies(debouncedSearchTerm);
-  }, [debouncedSearchTerm]);
+    fetchMovies(debouncedSearchTerm, currentPage, totalPages);
+  }, [debouncedSearchTerm, currentPage, totalPages]);
 
   useEffect(() => {
     loadTrendingMovies();
   }, []);
+
+  const movieSectionRef = useRef(null);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    movieSectionRef.current.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <main>
@@ -107,7 +119,7 @@ function App() {
           </section>
         )}
 
-        <section className="all-movies">
+        <section className="all-movies" ref={movieSectionRef}>
           <h2>All Movies</h2>
 
           {isLoading ? (
@@ -115,11 +127,18 @@ function App() {
           ) : errorMessage ? (
             <p className="text-red-500">{errorMessage}</p>
           ) : (
-            <ul>
-              {movieList.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
-              ))}
-            </ul>
+            <>
+              <ul>
+                {movieList.map((movie) => (
+                  <MovieCard key={movie.id} movie={movie} />
+                ))}
+              </ul>
+              <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                handlePageChange={handlePageChange}
+              />
+            </>
           )}
         </section>
       </div>
